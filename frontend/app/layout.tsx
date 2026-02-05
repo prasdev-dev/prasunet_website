@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { SpeedInsights } from "@vercel/speed-insights/next";
+
 import Script from "next/script"; // ✅ Import Next.js Script component
 
 export const metadata: Metadata = {
