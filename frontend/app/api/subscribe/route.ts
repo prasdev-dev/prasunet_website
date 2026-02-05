@@ -1,14 +1,23 @@
-import { NextResponse } from "next/server";
-import { PrismaClient } from "@prisma/client";
+export const runtime = "nodejs";
+export const dynamic = "force-dynamic";
 
-const prisma = new PrismaClient(); // Ensure Prisma is properly set up
+import { NextResponse } from "next/server";
+
+// ⬇️ IMPORTANT: use require() for Prisma on Cloudflare
+// eslint-disable-next-line @typescript-eslint/no-var-requires
+const { PrismaClient } = require("@prisma/client");
+
+const prisma = new PrismaClient();
 
 export async function POST(req: Request) {
   try {
     const { email } = await req.json();
 
     if (!email) {
-      return NextResponse.json({ message: "Email is required." }, { status: 400 });
+      return NextResponse.json(
+        { message: "Email is required." },
+        { status: 400 }
+      );
     }
 
     // Save the email in the database
@@ -16,9 +25,18 @@ export async function POST(req: Request) {
       data: { email },
     });
 
-    return NextResponse.json({ message: "Successfully subscribed!" }, { status: 200 });
+    return NextResponse.json(
+      { message: "Successfully subscribed!" },
+      { status: 200 }
+    );
   } catch (error) {
     console.error("Error subscribing:", error);
-    return NextResponse.json({ message: "Internal Server Error" }, { status: 500 });
+
+    return NextResponse.json(
+      { message: "Internal Server Error" },
+      { status: 500 }
+    );
+  } finally {
+    await prisma.$disconnect();
   }
 }
